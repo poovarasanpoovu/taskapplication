@@ -2,6 +2,7 @@ import mysql.connector
 import taskapp
 import time
 import admintaskapp
+from datetime import datetime
 
 NEGATIVE = "\033[7m"
 RESET = '\033[0m'
@@ -37,6 +38,7 @@ def table_creation():
       user_id INT PRIMARY KEY AUTO_INCREMENT,
       user_name VARCHAR(30),
       user_password VARCHAR(30)
+      user_date DATE
     )'''
     cursors.execute(table_create)
 #table_creation()
@@ -45,7 +47,7 @@ passkey =''
 name=''
 password=''
 def insert_table(name,password):
-        detail_query = "SELECT * FROM taskapptable WHERE user_name = %s AND user_password = %s"
+        detail_query = "SELECT user_name,user_password FROM taskapptable WHERE user_name = %s AND user_password = %s"
         cursors.execute(detail_query, (name, password))
         result = cursors.fetchall()
         if result:
@@ -54,8 +56,10 @@ def insert_table(name,password):
             time.sleep(1)
             user_enter()
         else:
-            insert_query = "INSERT INTO taskapptable (user_name,user_password) VALUES (%s, %s)"
-            insert_item = (name,password)
+            insert_query = "INSERT INTO taskapptable (user_name,user_password,user_date) VALUES (%s, %s, %s)"
+            date = datetime.now()
+            cur_date = date.strftime("%Y-%m-%d")
+            insert_item = (name,password,cur_date)
             cursors.execute(insert_query,insert_item)
             database_connection.commit()
             print(BOLD,ITALIC,"\nAccount Successfully Created!!!",RESET,success_emoji,"\n")
@@ -75,11 +79,16 @@ def insert_table(name,password):
 
 
 def checking_table(name,passkey):
-      detail_query="SELECT * FROM taskapptable WHERE user_name = %s AND user_password = %s"
+      detail_query="SELECT user_name,user_password FROM taskapptable WHERE user_name = %s AND user_password = %s"
       cursors.execute(detail_query,(name,passkey))
       result = cursors.fetchall()
       if result:
-        taskapp.main(name)
+        if name=="Tom" and passkey=="Welcome@123$":
+          print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
+          time.sleep(2)
+          user_enter()
+        else:
+            taskapp.main(name)
       else:
           print(BOLD,ITALIC,NEGATIVE,"User_name or Password wrong,Please try again!!!",RESET,smile_mouth)
           time.sleep(2)

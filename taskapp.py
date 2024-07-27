@@ -14,6 +14,7 @@ cur = db_connect.cursor()
 def table_tasks():
  insert_task = '''
     CREATE TABLE IF NOT EXISTS taskinsert(
+      user_name VARCHAR(20),
       task_name VARCHAR(20),
       task_time TIME
 
@@ -23,6 +24,7 @@ def table_tasks():
 def table_update():
     update_tasks='''
     CREATE TABLE IF NOT EXISTS taskupdate(
+      user_name VARCHAR(20),
       task_name VARCHAR(20),
       task_time time
     )'''
@@ -62,7 +64,7 @@ print("\rDate & time : ",date.strftime("%d/%m/%Y; %H:%M:%S %p"))
 user = ''
 passwords = ''
 
-def add_task():
+def add_task(user):
 
    try:
        print(BOLD,ITALIC)
@@ -74,10 +76,10 @@ def add_task():
    else:
        for i in range(1, number + 1):
            task = input(f"Enter the task {i}: ")
-           insert_task_query="INSERT INTO taskinsert VALUES (%s,%s)"
+           insert_task_query="INSERT INTO taskinsert VALUES (%s,%s,%s)"
            dates = d.now()
-           cur_date=dates.strftime("%H:%M:%S")
-           cur.execute(insert_task_query,(task,cur_date))
+           cur_time=dates.strftime("%H:%M:%S")
+           cur.execute(insert_task_query,(user,task,cur_time))
            db_connect.commit()
        print("Task's added Successfully!!",smile_emoji)
        task_start=time.time()
@@ -85,7 +87,7 @@ def add_task():
 
 def view_task():
     print(BOLD,ITALIC)
-    cur.execute("SELECT task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskinsert")
+    cur.execute("SELECT user_name,task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskinsert")
     result_tasks=cur.fetchall()
     if not result_tasks:
         print(NEGATIVE,"No Task's Found!!!",RESET,hand_emoji)
@@ -97,9 +99,9 @@ def view_task():
            table_format.append(j)
           #print(f"{count}: {j[0]}  Time is :{j[1]}".title())
           #count+=1
-       print(tabulate(table_format,headers=["Task_Name","Task_Time"],tablefmt="grid",numalign="center"))
+       print(tabulate(table_format,headers=["User_Name","Task_Name","Task_Time"],tablefmt="grid",numalign="center"))
        time.sleep(2)
-def update_task():
+def update_task(user):
 
     print(BOLD,ITALIC)
     cur.execute("SELECT task_name FROM taskinsert")
@@ -127,8 +129,8 @@ def update_task():
                      print("\n Updated Successfully!!!", smile_emoji)
                      dates = d.now()
                      dates=dates.strftime("%H:%M:%S")
-                     insert_table="INSERT INTO taskupdate VALUES(%s,%s)"
-                     cur.execute(insert_table,(choose,dates))
+                     insert_table="INSERT INTO taskupdate VALUES(%s,%s,%s)"
+                     cur.execute(insert_table,(user,choose,dates))
                      db_connect.commit()
                      time.sleep(2)
                      break
@@ -144,7 +146,7 @@ def update_task():
 
 def complete_task():
     print(BOLD,ITALIC)
-    cur.execute("SELECT task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskupdate")
+    cur.execute("SELECT user_name,task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskupdate")
     result_tasks = cur.fetchall()
     if not result_tasks:
         print(BOLD, ITALIC, NEGATIVE, "No Task's Found!!!", RESET, hand_emoji)
@@ -156,7 +158,7 @@ def complete_task():
             #print(f"{count}: {j[0]}  Time is :{j[1]}".title())
             #count += 1
             table_complete.append(j)
-        print(tabulate(table_complete, headers=["Task_Name", "Task_Time"], tablefmt="grid", numalign="center"))
+        print(tabulate(table_complete, headers=["user_Name","Task_Name", "Task_Time"], tablefmt="grid", numalign="center"))
         time.sleep(2)
 
 def main(user):
@@ -183,11 +185,11 @@ def main(user):
          print(NEGATIVE,"Only Numeric!!!",RESET,verify_emoji)
      else:
         if task == 1:
-          add_task()
+          add_task(user)
         elif task == 2:
           view_task()
         elif task == 3:
-          update_task()
+          update_task(user)
         elif task == 4:
           complete_task()
         elif task==5:

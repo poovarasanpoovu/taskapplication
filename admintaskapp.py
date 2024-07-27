@@ -1,5 +1,6 @@
 import mysql.connector
 import time
+from datetime import datetime as d
 from tabulate import tabulate
 
 NEGATIVE = "\033[7m"
@@ -41,6 +42,8 @@ def admin_portal(admin_name,admin_pass):
     if result:
           if admin_name=="Tom" and admin_pass=="Welcome@123$":
               print(f"{BOLD}{ITALIC}Hi! welcome '{RED + admin_name + heart_emoji + RESET}'")
+              date=d.now()
+              print(BOLD,ITALIC,"\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
               print("\t", cat_art)
               time.sleep(2)
               while True:
@@ -65,10 +68,10 @@ def admin_portal(admin_name,admin_pass):
                           userinfo_changes(admin_name)
                       elif choose==4:
                           print(BOLD, ITALIC)
-                          print("Thanks for coming!!!",admin_name, smile_emoji)
+                          print(f"Thanks for coming!!!{RED+admin_name+RED+RESET+smile_emoji}")
                           break
                       else:
-                          print(BOLD, ITALIC, NEGATIVE,"''If would like to continue this task please choose (1 To 3) numbers!!!''", RESET)
+                          print(BOLD, ITALIC, NEGATIVE,"''If would like to continue this task please choose (1 To 4) numbers!!!''", RESET)
                           time.sleep(2)
           else:
             print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
@@ -90,7 +93,7 @@ def admin_portal(admin_name,admin_pass):
 
 
 def user_details():
-   cursorss.execute("SELECT * FROM taskapptable WHERE NOT user_name= 'Tom'")
+   cursorss.execute("SELECT user_id,user_name,user_password,DATE_FORMAT(user_date,'%d/%m/%Y') FROM taskapptable WHERE NOT user_name= 'Tom'")
    result=cursorss.fetchall()
    if not result:
        print(NEGATIVE, "No Task's Found!!!", RESET, hand_emoji)
@@ -99,12 +102,12 @@ def user_details():
        table_format = []
        for j in result:
            table_format.append(j)
-       print(tabulate(table_format, headers=["User_ID", "User_Name","User_Password"], tablefmt="grid", numalign="center"))
+       print(tabulate(table_format, headers=["User_ID", "User_Name","User_Password","User_Date"], tablefmt="grid", numalign="center"))
        time.sleep(2)
 
 
 def task_details():
-    cursorss.execute("SELECT task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskinsert")
+    cursorss.execute("SELECT user_name,task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskinsert")
     result = cursorss.fetchall()
     if not result:
         print(NEGATIVE, "No Task's Found!!!", RESET, hand_emoji)
@@ -113,10 +116,12 @@ def task_details():
         table_format = []
         for j in result:
             table_format.append(j)
-        print(tabulate(table_format, headers=["Task_Name", "Task_time"], tablefmt="grid",numalign="center"))
+        print(tabulate(table_format, headers=["User_Name","Task_Name", "Task_time"], tablefmt="grid",numalign="center"))
         time.sleep(2)
 def userinfo_changes(admin_name):
-    print(f"{BOLD}{ITALIC}Hi! welcome User Information Changes portal '{RED + admin_name + heart_emoji + RESET}'")
+    print(f"{BOLD}{ITALIC}User Information Changes portal{RESET}".center(30,"*"))
+    date = d.now()
+    print(BOLD,ITALIC,"\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
     time.sleep(2)
     while True:
         print(BOLD, ITALIC)
@@ -146,7 +151,9 @@ def userinfo_changes(admin_name):
                 time.sleep(2)
 
 def userpass_change():
-    print(f"{BOLD}{ITALIC}Hi! welcome User Password's Changes portal{RESET}")
+    print(f"{BOLD}{ITALIC}Hi! welcome User Password's Changes portal")
+    date = d.now()
+    print("\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
     time.sleep(2)
     print(BOLD, ITALIC, YELLOW)
     username = input("Name : ")
@@ -157,11 +164,12 @@ def userpass_change():
     result = cursorss.fetchall()
     if result:
         change_pass=input(f"{BOLD}{ITALIC}New Password : ")
-        insert_query="UPDATE taskapptable SET user_password=(%s) WHERE user_name =(%s)"
-        cursorss.execute(insert_query,(change_pass,username))
+        new_date=date.strftime("%Y-%m-%d")
+        insert_query="UPDATE taskapptable SET user_date=(%s),user_password=(%s)  WHERE user_name =(%s)"
+        cursorss.execute(insert_query,(new_date,change_pass,username))
         db_connect.commit()
         print("")
-        print(f"Password Successfully Changed!!! {username}{RESET}{smile_mouth}")
+        print(f"Password Successfully Changed!!! {RED}{username}{RESET}{smile_mouth}")
         time.sleep(2)
     else:
         print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
@@ -170,4 +178,53 @@ def userpass_change():
 
 
 def usertask_change():
-   pass
+
+    print(f"{BOLD}{ITALIC}Hi! welcome User Task's Changes portal")
+    date = d.now()
+    print("\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
+    time.sleep(2)
+    while True:
+            print(BOLD, ITALIC)
+            print(BLUE, "Menu's".center(30, "*"))
+            print("1.Task_Insert Table Delete")
+            print("2.Task_Update Table Delete")
+            print("3.Sign Out")
+            try:
+                print(PURPLE)
+                choose = int(input("Enter the option(1/2/3): "))
+                print(RESET)
+            except Exception:
+                print(NEGATIVE,"Numeric Only!!!",RESET)
+            else:
+               if choose==1:
+                  cursorss.execute("SELECT * FROM taskinsert")
+                  result = cursorss.fetchall()
+                  if result:
+                        cursorss.execute("DELETE FROM taskinsert")
+                        db_connect.commit()
+                        print(BOLD,ITALIC,"Successfully Deleted Taskinsert Item's!!!")
+                        time.sleep(1)
+                  else:
+                        print(NEGATIVE,BOLD,ITALIC,"Taskinsert Table already Empty!!!",RESET)
+                        time.sleep(1)
+               elif choose==2:
+                    cursorss.execute("SELECT * FROM taskupdate")
+                    result = cursorss.fetchall()
+                    if result:
+                         cursorss.execute("DELETE FROM taskupdate")
+                         db_connect.commit()
+                         print(BOLD,ITALIC,"Successfully Deleted Taskupdate Item's!!!",RESET)
+                         time.sleep(1)
+                    else:
+                          print(NEGATIVE,BOLD,ITALIC,"Taskupdate Table already Empty!!!",RESET)
+                          time.sleep(1)
+               elif choose == 3:
+                   print(BOLD, ITALIC)
+                   print("Thanks for coming!!!", smile_emoji)
+                   print("---------------Page Re-direct To User Information Changes portal----------------")
+                   time.sleep(1)
+                   break
+               else:
+                  print(BOLD, ITALIC, NEGATIVE, "''If would like to continue this task please choose (1 To 3) numbers!!!''",RESET)
+                  time.sleep(2)
+

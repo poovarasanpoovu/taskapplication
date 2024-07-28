@@ -20,6 +20,9 @@ hand_emoji='\U0001F44D'
 heart_emoji='\U00002764'
 smile_mouth='\U0001F603'
 
+WRONG="\u274C"
+RIGHT="\u2705"
+
 cat_art = r'''
  /\_/\  
 ( o.o ) 
@@ -58,7 +61,8 @@ def admin_portal(admin_name,admin_pass):
                       choose = int(input("Enter the option(1/2/3/4): "))
                       print(RESET)
                   except Exception:
-                      print(NEGATIVE, "Only Numeric!!!", RESET, verify_emoji)
+                      print(f"\n{RESET+NEGATIVE}Only Numeric!!!{RESET+WRONG}")
+                      time.sleep(1)
                   else:
                       if choose==1:
                           user_details()
@@ -71,10 +75,10 @@ def admin_portal(admin_name,admin_pass):
                           print(f"Thanks for coming!!!{RED+admin_name+RED+RESET+smile_emoji}")
                           break
                       else:
-                          print(BOLD, ITALIC, NEGATIVE,"''If would like to continue this task please choose (1 To 4) numbers!!!''", RESET)
+                          print(NEGATIVE,"''If would like to continue this task please choose (1 To 4) numbers!!!''", RESET)
                           time.sleep(2)
           else:
-            print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
+            print(NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET,WRONG)
             time.sleep(1)
             print(BOLD, ITALIC, YELLOW)
             admin_name = input("Admin_Name : ")
@@ -82,7 +86,7 @@ def admin_portal(admin_name,admin_pass):
             print(RESET)
             admin_portal(admin_name, admin_pass)
     else:
-        print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
+        print(NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET,WRONG)
         time.sleep(1)
         print(BOLD, ITALIC, YELLOW)
         admin_name = input("Admin_Name : ")
@@ -100,6 +104,7 @@ def user_details():
        time.sleep(2)
    else:
        table_format = []
+       print(f"\t\t\t\t{BOLD+ITALIC}Total user's : {RED}{len(result)}{RESET}")
        for j in result:
            table_format.append(j)
        print(tabulate(table_format, headers=["User_ID", "User_Name","User_Password","User_Date"], tablefmt="grid", numalign="center"))
@@ -119,42 +124,46 @@ def task_details():
         print(tabulate(table_format, headers=["User_Name","Task_Name", "Task_time"], tablefmt="grid",numalign="center"))
         time.sleep(2)
 def userinfo_changes(admin_name):
-    print(f"{BOLD}{ITALIC}User Information Changes portal{RESET}".center(30,"*"))
+    print(f"\t\t\t{BOLD}{ITALIC}User Information Changes portal{RESET}")
     date = d.now()
-    print(BOLD,ITALIC,"\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
+    print(BOLD,ITALIC,"\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
     time.sleep(2)
     while True:
         print(BOLD, ITALIC)
         print(BLUE, "Menu's".center(30, "*"))
         print("1.User's Password Changes")
         print("2.User's Task Changes")
-        print("3.Sign Out")
+        print("3.User's Details Removed")
+        print("4.Sign Out")
         try:
             print(PURPLE)
             choose = int(input("Enter the option(1/2/3): "))
             print(RESET)
         except Exception:
-            print(NEGATIVE, "Only Numeric!!!", RESET, verify_emoji)
+            print(f"\n{RESET+NEGATIVE}Only Numeric!!!", RESET,WRONG)
+            time.sleep(1)
         else:
             if choose == 1:
                 userpass_change()
             elif choose == 2:
                 usertask_change()
             elif choose == 3:
+                user_removed()
+            elif choose == 4:
                 print(BOLD, ITALIC)
                 print("Thanks for coming!!!", smile_emoji)
                 print("---------------Page Re-direct To Admin Portal----------------")
                 time.sleep(1)
                 break
             else:
-                print(BOLD, ITALIC, NEGATIVE,"''If would like to continue this task please choose (1 To 3) numbers!!!''", RESET)
+                print(NEGATIVE,"''If would like to continue this task please choose (1 To 4) numbers!!!''", RESET)
                 time.sleep(2)
 
 def userpass_change():
-    print(f"{BOLD}{ITALIC}Hi! welcome User Password's Changes portal")
+    print(f"\t\t\t{BOLD}{ITALIC}User Password's Changes portal")
     date = d.now()
-    print("\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
-    time.sleep(2)
+    print("\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
+    time.sleep(1)
     print(BOLD, ITALIC, YELLOW)
     username = input("Name : ")
     passkey = input("Password : ")
@@ -172,16 +181,33 @@ def userpass_change():
         print(f"Password Successfully Changed!!! {RED}{username}{RESET}{smile_mouth}")
         time.sleep(2)
     else:
-        print(BOLD, ITALIC, NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, smile_mouth)
+        print(NEGATIVE ,"User_name or Password wrong,Please try again!!!", RESET, WRONG)
         time.sleep(1)
         userpass_change()
+
+def user_removed():
+
+    print(f"\t\t\t{BOLD}{ITALIC}User Details Removed portal")
+    date = d.now()
+    print("\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
+    time.sleep(2)
+    try:
+        print(BOLD, ITALIC,YELLOW)
+        user_id=int(input("Enter User Id : "))
+        user_name=input("Enter User Name : ")
+        print(RESET)
+
+    except Exception:
+        print(NEGATIVE, "Id (Numeric) & Name (Characters)!!!", RESET,WRONG)
+    else:
+       cursorss.execute("SELECT * FROM taskapptable WHERE user_id = %s AND user_name = %s")
 
 
 def usertask_change():
 
-    print(f"{BOLD}{ITALIC}Hi! welcome User Task's Changes portal")
+    print(f"\t\t\t{BOLD}{ITALIC}User Task's Changes portal")
     date = d.now()
-    print("\rDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
+    print("\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
     time.sleep(2)
     while True:
             print(BOLD, ITALIC)
@@ -194,7 +220,8 @@ def usertask_change():
                 choose = int(input("Enter the option(1/2/3): "))
                 print(RESET)
             except Exception:
-                print(NEGATIVE,"Numeric Only!!!",RESET)
+                print(f"\n{RESET+NEGATIVE}Numeric Only!!!{RESET+WRONG}")
+                time.sleep(1)
             else:
                if choose==1:
                   cursorss.execute("SELECT * FROM taskinsert")
@@ -202,10 +229,10 @@ def usertask_change():
                   if result:
                         cursorss.execute("DELETE FROM taskinsert")
                         db_connect.commit()
-                        print(BOLD,ITALIC,"Successfully Deleted Taskinsert Item's!!!")
+                        print(BOLD,ITALIC,"Successfully Deleted Taskinsert Item's!!!",RIGHT)
                         time.sleep(1)
                   else:
-                        print(NEGATIVE,BOLD,ITALIC,"Taskinsert Table already Empty!!!",RESET)
+                        print(NEGATIVE,"Taskinsert Table already Empty!!!",RESET)
                         time.sleep(1)
                elif choose==2:
                     cursorss.execute("SELECT * FROM taskupdate")
@@ -213,10 +240,10 @@ def usertask_change():
                     if result:
                          cursorss.execute("DELETE FROM taskupdate")
                          db_connect.commit()
-                         print(BOLD,ITALIC,"Successfully Deleted Taskupdate Item's!!!",RESET)
+                         print(BOLD,ITALIC,"Successfully Deleted Taskupdate Item's!!!",RESET,RIGHT)
                          time.sleep(1)
                     else:
-                          print(NEGATIVE,BOLD,ITALIC,"Taskupdate Table already Empty!!!",RESET)
+                          print(NEGATIVE,"Taskupdate Table already Empty!!!",RESET)
                           time.sleep(1)
                elif choose == 3:
                    print(BOLD, ITALIC)
@@ -225,6 +252,6 @@ def usertask_change():
                    time.sleep(1)
                    break
                else:
-                  print(BOLD, ITALIC, NEGATIVE, "''If would like to continue this task please choose (1 To 3) numbers!!!''",RESET)
+                  print(BOLD, "''If would like to continue this task please choose (1 To 3) numbers!!!''",RESET)
                   time.sleep(2)
 

@@ -52,6 +52,9 @@ thanks_emoji='\U0001F64F'
 hand_emoji='\U0001F44D'
 heart_emoji='\U00002764'
 
+WRONG="\u274C"
+RIGHT="\u2705"
+
 cat_art = r'''
  /\_/\  
 ( o.o ) 
@@ -71,8 +74,8 @@ def add_task(user):
        number = int(input("How many task's will added : "))
 
    except Exception:
-       print(NEGATIVE,"Only Numeric!!!",RESET,verify_emoji)
-       add_task()
+       print(f"\n{RESET+NEGATIVE}Only Numeric!!!{RESET+WRONG}")
+       add_task(user)
    else:
        for i in range(1, number + 1):
            task = input(f"Enter the task {i}: ")
@@ -81,7 +84,7 @@ def add_task(user):
            cur_time=dates.strftime("%H:%M:%S")
            cur.execute(insert_task_query,(user,task,cur_time))
            db_connect.commit()
-       print("Task's added Successfully!!",smile_emoji)
+       print("Task's added Successfully!!!",RIGHT,smile_emoji)
        task_start=time.time()
        time.sleep(2)
 
@@ -90,7 +93,7 @@ def view_task():
     cur.execute("SELECT user_name,task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskinsert")
     result_tasks=cur.fetchall()
     if not result_tasks:
-        print(NEGATIVE,"No Task's Found!!!",RESET,hand_emoji)
+        print(f"{RESET+NEGATIVE}No Task's Found!!!{RESET+hand_emoji}")
         time.sleep(2)
     else:
        count=1
@@ -107,15 +110,15 @@ def update_task(user):
     cur.execute("SELECT task_name FROM taskinsert")
     result_tasks = cur.fetchall()
     if not result_tasks:
-        print(NEGATIVE,"No Task's Found!!!",RESET,hand_emoji)
+        print(f"{RESET+NEGATIVE}No Task's Found!!!{RESET+hand_emoji}")
         time.sleep(2)
     else:
         try:
           num= int(input("How many task's updated : "))
         except Exception:
-            print("Only Numeric!!!",verify_emoji)
+            print(f"{RESET+NEGATIVE}Only Numeric!!!{RESET+WRONG}")
             time.sleep(2)
-            update_task()
+            update_task(user)
         else:
             if num<=len(result_tasks):
               for i in range(0, num):
@@ -126,7 +129,7 @@ def update_task(user):
                      delete_query="DELETE FROM taskinsert where task_name=(%s)"
                      cur.execute(delete_query,(choose,))
                      db_connect.commit()
-                     print("\n Updated Successfully!!!", smile_emoji)
+                     print("\n Updated Successfully!!!", RIGHT,smile_emoji)
                      dates = d.now()
                      dates=dates.strftime("%H:%M:%S")
                      insert_table="INSERT INTO taskupdate VALUES(%s,%s,%s)"
@@ -136,20 +139,20 @@ def update_task(user):
                      break
 
                 else:
-                     print(f"{NEGATIVE}Enter Correct Task's name",RESET)
+                     print(f"{NEGATIVE} Enter Correct Task's name",RESET,WRONG)
                      time.sleep(2)
-                     update_task()
+                     update_task(user)
             else:
                   print(f"Please Enter {RED}Less_than {len(result_tasks)}{RESET} (OR) {RED}{BOLD}{ITALIC}Equal_To {len(result_tasks)}{RESET}")
                   time.sleep(2)
-                  update_task()
+                  update_task(user)
 
 def complete_task():
     print(BOLD,ITALIC)
     cur.execute("SELECT user_name,task_name,TIME_FORMAT(task_time,'%h:%i:%s %p') FROM taskupdate")
     result_tasks = cur.fetchall()
     if not result_tasks:
-        print(BOLD, ITALIC, NEGATIVE, "No Task's Found!!!", RESET, hand_emoji)
+        print(f"{NEGATIVE}No Task's Found!!!{RESET+hand_emoji}")
         time.sleep(2)
     else:
         count = 1
@@ -182,7 +185,8 @@ def main(user):
         print(RESET)
 
      except Exception:
-         print(NEGATIVE,"Only Numeric!!!",RESET,verify_emoji)
+         print(f"\n{RESET+NEGATIVE}Only Numeric!!!{RESET+WRONG}")
+         time.sleep(1)
      else:
         if task == 1:
           add_task(user)

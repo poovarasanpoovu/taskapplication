@@ -127,7 +127,7 @@ def userinfo_changes(admin_name):
     print(f"\t\t\t{BOLD}{ITALIC}User Information Changes portal{RESET}")
     date = d.now()
     print(BOLD,ITALIC,"\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"),RESET)
-    time.sleep(2)
+    time.sleep(1)
     while True:
         print(BOLD, ITALIC)
         print(BLUE, "Menu's".center(30, "*"))
@@ -157,7 +157,7 @@ def userinfo_changes(admin_name):
                 break
             else:
                 print(NEGATIVE,"''If would like to continue this task please choose (1 To 4) numbers!!!''", RESET)
-                time.sleep(2)
+                time.sleep(1)
 
 def userpass_change():
     print(f"\t\t\t{BOLD}{ITALIC}User Password's Changes portal")
@@ -190,7 +190,7 @@ def user_removed():
     print(f"\t\t\t{BOLD}{ITALIC}User Details Removed portal")
     date = d.now()
     print("\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
-    time.sleep(2)
+    time.sleep(1)
     try:
         print(BOLD, ITALIC,YELLOW)
         user_id=int(input("Enter User Id : "))
@@ -198,9 +198,32 @@ def user_removed():
         print(RESET)
 
     except Exception:
-        print(NEGATIVE, "Id (Numeric) & Name (Characters)!!!", RESET,WRONG)
+        print(RESET,NEGATIVE, "Id (Numeric) & Name (Characters)!!!", RESET,WRONG)
+        time.sleep(1)
+        user_removed()
     else:
-       cursorss.execute("SELECT * FROM taskapptable WHERE user_id = %s AND user_name = %s")
+        get_query=("SELECT * FROM taskapptable WHERE user_id = %s AND user_name = %s")
+        cursorss.execute(get_query,(user_id,user_name))
+        result=cursorss.fetchall()
+
+        if not result:
+           print(NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET, WRONG)
+           time.sleep(1)
+           user_removed()
+        else:
+            print(f"{BOLD+ITALIC+YELLOW}")
+            admin_pass = input("Enter Admin's Password : ")
+            print(f"{RESET}")
+            if admin_pass == "Welcome@123$":
+               delete_query = ("DELETE FROM taskapptable WHERE user_id = %s AND user_name = %s")
+               cursorss.execute(delete_query,(user_id,user_name))
+               db_connect.commit()
+               print(f"\n{BOLD+ITALIC}User {user_name} Deleted Successfully!!!", RIGHT, smile_emoji)
+               time.sleep(1)
+            else:
+                print("\n",NEGATIVE,"Admin Your Password wrong,Please try again!!!", RESET, WRONG)
+                time.sleep(1)
+                user_removed()
 
 
 def usertask_change():
@@ -208,7 +231,7 @@ def usertask_change():
     print(f"\t\t\t{BOLD}{ITALIC}User Task's Changes portal")
     date = d.now()
     print("\t\t\tDate & time : ", date.strftime("%d/%m/%Y; %H:%M:%S %p"))
-    time.sleep(2)
+    time.sleep(1)
     while True:
             print(BOLD, ITALIC)
             print(BLUE, "Menu's".center(30, "*"))

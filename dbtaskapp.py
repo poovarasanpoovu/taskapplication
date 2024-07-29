@@ -42,7 +42,7 @@ def table_creation():
     CREATE TABLE IF NOT EXISTS taskapptable(
       user_id INT PRIMARY KEY AUTO_INCREMENT,
       user_name VARCHAR(30),
-      user_password VARCHAR(30)
+      user_password VARCHAR(30),
       user_date DATE
     )'''
     cursors.execute(table_create)
@@ -87,19 +87,12 @@ def checking_table(name,passkey):
       detail_query = "SELECT user_name,user_password FROM taskapptable WHERE user_name = %s AND user_password = %s"
       cursors.execute(detail_query,(name,passkey))
       result = cursors.fetchall()
-      if result:
-        if name == "Tom" and passkey == "Welcome@123$":
+      if not result:
           print(NEGATIVE, "User_name or Password wrong,Please try again!!!", RESET,WRONG)
           time.sleep(2)
           user_enter()
-        else:
-            taskapp.main(name)
       else:
-          print(NEGATIVE,"User_name or Password wrong,Please try again!!!",RESET,WRONG)
-          time.sleep(2)
-          user_enter()
-      cursors.close()
-      database_connection.close()
+          taskapp.main(name)
 
 
 def user_enter():
@@ -119,6 +112,7 @@ def user_enter():
        except Exception:
            print(f"\n{RESET+NEGATIVE}Only Numeric!!!{RESET+WRONG}")
            time.sleep(1)
+           user_enter()
        else:
          if choose == 1:
           print(BOLD,ITALIC,YELLOW)

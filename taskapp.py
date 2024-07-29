@@ -26,7 +26,7 @@ def table_update():
     CREATE TABLE IF NOT EXISTS taskupdate(
       user_name VARCHAR(20),
       task_name VARCHAR(20),
-      task_time time
+      task_time TIME
     )'''
     cur.execute(update_tasks)
 #table_update()
@@ -84,6 +84,7 @@ def add_task(user):
            cur_time=dates.strftime("%H:%M:%S")
            cur.execute(insert_task_query,(user,task,cur_time))
            db_connect.commit()
+       print("")
        print("Task's added Successfully!!!",RIGHT,smile_emoji)
        task_start=time.time()
        time.sleep(2)
@@ -139,10 +140,12 @@ def update_task(user):
                      break
 
                 else:
+                     print("")
                      print(f"{NEGATIVE} Enter Correct Task's name",RESET,WRONG)
                      time.sleep(2)
                      update_task(user)
             else:
+                  print("")
                   print(f"Please Enter {RED}Less_than {len(result_tasks)}{RESET} (OR) {RED}{BOLD}{ITALIC}Equal_To {len(result_tasks)}{RESET}")
                   time.sleep(2)
                   update_task(user)
